@@ -90,8 +90,6 @@ class EinStein_Game():
         self.board[4][3] = blue[4]
         self.board[4][4] = blue[5]
         #print(self.board)
-        
-        pass
     
     def ChooseChess(self, Randnum):
         tempboard = self.board.copy()
@@ -117,23 +115,46 @@ class EinStein_Game():
                 return [np.where(min == min.min())[0][0], np.where(min == min.min())[1][0]], [np.where(max == max.max())[0][0], np.where(max == max.max())[1][0]]
 
                     
-    def Move():
+    def Move(self, position, direction):
+        x = position[0]
+        y = position[1]
+        if self.board[x][y] > 0:
+            if direction == 0:
+                self.board[x][y + 1] = self.board[x][y]
+                self.board[x][y] = 0.
+            elif direction == 1:
+                self.board[x + 1][y] = self.board[x][y]
+                self.board[x][y] = 0.
+            elif direction == 2:
+                self.board[x + 1][y + 1] = self.board[x][y]
+                self.board[x][y] = 0.
+        elif self.board[x][y] < 0:
+            if direction == 0:
+                self.board[x][y - 1] = self.board[x][y]
+                self.board[x][y] = 0.
+            elif direction == 1:
+                self.board[x - 1][y] = self.board[x][y]
+                self.board[x][y] = 0.
+            elif direction == 2:
+                self.board[x - 1][y - 1] = self.board[x][y]
+                self.board[x][y] = 0.
+
 
         pass
 
-    def IsWin():
+    def IsWin(self):
 
         pass
 
-    def AI():
+    def AI(self):
 
         pass
 
-    def show():
+    def show(self):
 
         pass
 
-    def regret():
+    def regret(self):
 
         pass
 
