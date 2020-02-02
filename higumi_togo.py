@@ -53,8 +53,19 @@ class EinStein_Game():
                             position = chessPosition2
                         moveDirection = self.GetMove(position)
                         self.Move(position, moveDirection)
-            
+                        winner = self.GetWinner()
+                        if winner != 0:
+                            os.system('cls')
+                            if winner == 1:
+                                print('红方获胜')
+                            else:
+                                print('蓝方获胜')
+                            _ = input('回车以继续')
+                            os.system('cls')
+                            break
+                        Player = -Player
             os.system('cls')
+
 
     def GetMove(self, position):
         if self.board[position[0]][position[1]] > 0:
@@ -143,9 +154,15 @@ class EinStein_Game():
 
         pass
 
-    def IsWin(self):
+    def GetWinner(self):
+        if self.board[0][0] < 0 or (self.board <= 0).all():
+            Winner = -1
+        elif self.board[4][4] > 0 or (self.board >= 0).all():
+            Winner = 1
+        else:
+            Winner = 0
 
-        pass
+        return Winner
 
     def AI(self):
 
@@ -161,4 +178,3 @@ class EinStein_Game():
 
 
 EinStein_Game().main()
-
