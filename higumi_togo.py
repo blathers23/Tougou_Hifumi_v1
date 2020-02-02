@@ -51,7 +51,8 @@ class EinStein_Game():
                             position = chessPosition1
                         else:
                             position = chessPosition2
-                        move = self.GetMove(position)
+                        moveDirection = self.GetMove(position)
+                        self.Move(position, moveDirection)
             
             os.system('cls')
 
