@@ -12,9 +12,9 @@ class EinStein_Game():
 
     def main(self):
         while True:
-            print('###############')
-            print('##Higumi_Togo##')
-            print('###############')
+            print('#########################')
+            print('#######Higumi_Togo#######')
+            print('#########################')
             print()
             Tip1 = input('请输入"N"开始新游戏：')
             if Tip1 == "N":
@@ -89,6 +89,7 @@ class EinStein_Game():
                     
                 
     def createBoard(self, red, blue):
+        self.board = np.zeros([5,5])
         self.board[0][0] =  red[0]
         self.board[0][1] =  red[1]
         self.board[0][2] =  red[2]
