@@ -1,0 +1,6 @@
+model_checkpoint_path: "a_model-9001"
+all_model_checkpoint_paths: "a_model-5001"
+all_model_checkpoint_paths: "a_model-6001"
+all_model_checkpoint_paths: "a_model-7001"
+all_model_checkpoint_paths: "a_model-8001"
+all_model_checkpoint_paths: "a_model-9001"
