@@ -421,8 +421,27 @@ class EinStein_Game():
 
         
     def Save(self):
+        Team1 = input('请输入队伍1名称：')
+        Team2 = input('请输入队伍2名称：')
+        Location = input('请输入比赛地点：')
+        Name = input('请输入竞赛名称：')
 
-        pass
+        FileName = Team1 + 'vs' + Team2 + '-' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + '.txt'
+        Text1 = '#[' + Team1 + '][' + Team2 + '][' + time.strftime("%Y.%m.%d %H:%M:%S", time.localtime()) + ' ' + Location + '][' + Name + ']'
+        File = open(FileName, 'w')
+        File.write(Text1)
+        File.write('\r')
+        for RC in self.RCSS:
+            File.write(RC)
+        File.write('\r')
+        for BC in self.BCSS:
+            File.write(BC)
+        File.write('\r')
+        for Step in range(len(self.CI)):
+            File.write(str(Step + 1))
+            File.write(self.CI[Step])
+            File.write('\r')
+        File.close()
 
     def show(self):
 
