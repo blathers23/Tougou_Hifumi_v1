@@ -51,7 +51,7 @@ variables_to_restore = variable_averages.variables_to_restore()
 saver = tf.train.Saver(variables_to_restore)#实例化带有滑动平均值的saver
 
 ckpt = tf.train.get_checkpoint_state(a_backward.MODEL_SAVE_PATH)#用with结构加载ckpt
-saver.restore(sess,ckpt.model_checkpoint_path)
+saver.restore(sess, ckpt.model_checkpoint_path)
 
 class EinStein_Game():
     def __init__(self):
@@ -258,6 +258,10 @@ class EinStein_Game():
                                 break
                             self.Player = -self.Player
             elif Tip1 == "S":
+                if len(self.CI) == 0:
+                    print('还未进行棋局！！')
+                    _ = input('回车以继续：')
+                    continue
                 self.Save()
                 print('提示：棋谱保存成功')
                 _ = input('回车以继续：')
