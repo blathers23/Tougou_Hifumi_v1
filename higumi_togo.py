@@ -51,8 +51,7 @@ variables_to_restore = variable_averages.variables_to_restore()
 saver = tf.train.Saver(variables_to_restore)#实例化带有滑动平均值的saver
 
 ckpt = tf.train.get_checkpoint_state(a_backward.MODEL_SAVE_PATH)#用with结构加载ckpt
-if ckpt and ckpt.model_checkpoint_path:
-    saver.restore(sess,ckpt.model_checkpoint_path)
+saver.restore(sess,ckpt.model_checkpoint_path)
 
 class EinStein_Game():
     def __init__(self):
@@ -67,7 +66,7 @@ class EinStein_Game():
             print('#######Higumi_Togo#######')
             print('#########################')
             print()
-            Tip1 = input('请输入"N"开始新游戏：')
+            Tip1 = input('请输入"N"开始新游戏, 输入"S"保存上一局棋谱：')
             if Tip1 == "N":
                 Tip2 = input('人人对弈请输入"H", 人机对弈请输入"A":')
                 
@@ -78,6 +77,8 @@ class EinStein_Game():
                     blueBoard = [-float(n) for n in blueBoard.split(',')]
                     self.Player = float(input('请输入先手方：'))
                     self.createBoard(redBoard, blueBoard)
+                    self.PI = []
+                    self.PI.append(list(self.board.reshape(25)))
                     while True:
                         os.system('cls')
                         print(self.board)
@@ -104,6 +105,7 @@ class EinStein_Game():
                             position = chessPosition1
                         moveDirection = self.GetMove(position)
                         self.Move(position, moveDirection)
+                        self.PI.append(list(self.board.reshape(25)))
                         winner = self.GetWinner()
                         if winner != 0:
                             os.system('cls')
@@ -125,6 +127,8 @@ class EinStein_Game():
                     if self.mode == 'test':
                         self.Player = float(input('请输入先手方：'))
                         self.createBoard(redBoard, blueBoard)
+                        self.PI = []
+                        self.PI.append(list(self.board.reshape(25)))
                         while True:
                             os.system('cls')
                             print(self.board)
@@ -158,10 +162,11 @@ class EinStein_Game():
                                 time_start = time.time()
                                 #position = "?"
                                 #moveDirection = "?"
-                                position, moveDirection = AIMove(chessPosition0, chessPosition1)
+                                position, moveDirection = self.AIMove(chessPosition0, chessPosition1)
                                 time_end = time.time()
                                 print('AI思考用时为: ', time_end-time_start, ' 秒.')
                             self.Move(position, moveDirection)
+                            self.PI.append(list(self.board.reshape(25)))
                             winner = self.GetWinner()
                             if winner != 0:
                                 os.system('cls')
@@ -178,6 +183,8 @@ class EinStein_Game():
                         self.Player = float(input('请输入先手方：'))
                         AIPlayer = float(input('请输入AI方：'))
                         self.createBoard(redBoard, blueBoard)
+                        self.PI = []
+                        self.PI.append(list(self.board.reshape(25)))
                         while True:
                             os.system('cls')
                             print(self.board)
@@ -192,28 +199,29 @@ class EinStein_Game():
                             chessPosition0, chessPosition1 = self.ChooseChess(rand)
                             if AIPlayer != self.Player:
                                 Chess = int(input('请输入移动的棋子：'))
-                                if Chess not in [self.board[chessPosition1[0], chessPosition1[1]], self.board[chessPosition2[0], chessPosition2[1]]]:
+                                if Chess not in [self.board[chessPosition0[0], chessPosition0[1]], self.board[chessPosition1[0], chessPosition1[1]]]:
                                     print('!!!!!WARNING!!!!!')
                                     while True:
                                         Chess = int(input('请输入移动的棋子：'))
-                                        if Chess in [self.board[chessPosition1[0], chessPosition1[1]], self.board[chessPosition2[0], chessPosition2[1]]]:
+                                        if Chess in [self.board[chessPosition0[0], chessPosition0[1]], self.board[chessPosition1[0], chessPosition1[1]]]:
                                             break
                                         else:
                                             print('!!!!!WARNING!!!!!')
-                                if Chess == self.board[chessPosition1[0], chessPosition1[1]]:
-                                    position = chessPosition1
+                                if Chess == self.board[chessPosition0[0], chessPosition0[1]]:
+                                    position = chessPosition0
                                 else:
-                                    position = chessPosition2
+                                    position = chessPosition1
                                 moveDirection = self.GetMove(position)
                             elif AIPlayer == self.Player:
                                 print('AI落子思考中...')
                                 time_start = time.time()
                                 #position = "?"
                                 #moveDirection = "?"
-                                position, moveDirection = AIMove(chessPosition0, chessPosition1)
+                                position, moveDirection = self.AIMove(chessPosition0, chessPosition1)
                                 time_end = time.time()
                                 print('AI思考用时为: ', time_end-time_start, ' 秒.')
                             self.Move(position, moveDirection)
+                            self.PI.append(list(self.board.reshape(25)))
                             winner = self.GetWinner()
                             if winner != 0:
                                 os.system('cls')
@@ -225,6 +233,10 @@ class EinStein_Game():
                                 os.system('cls')
                                 break
                             self.Player = -self.Player
+            elif Tip1 == "S":
+                self.Saver()
+                print('提示：棋谱保存成功')
+                _ = input('回车以继续：')
             os.system('cls')
 
     def GetMove(self, position):
@@ -323,7 +335,7 @@ class EinStein_Game():
     def AIMove(self, Position0, Position1):
         Move0 = self.TFMove(Position0)
         Move1 = self.TFMove(Position1)
-        if self.Score(position0, Move0, position1, Move1) == 0:
+        if self.Score(Position0, Move0, Position1, Move1) == 0:
             moveDirection = Move0
             Position = Position0
         else:
@@ -349,7 +361,7 @@ class EinStein_Game():
         return TempBoard
 
     def TFMove(self, position):
-        Board = ChangeBoard()
+        Board = self.ChangeBoard()
         Board[position[0]][position[1]] = -Board[position[0]][position[1]]
         board_ready = np.reshape(Board,(
             1,
@@ -394,13 +406,13 @@ class EinStein_Game():
     def GetPD(self, position, sum = 0):
         if self.board[position[0]][position[1]] > 0:
             for Randnum in [1,2,3,4,5,6]:
-                P0, P1 = Game.ChooseChess(Randnum)
+                P0, P1 = self.ChooseChess(Randnum)
                 if P0 == position or P1 == position:
                     sum += 1 
             PD = sum/6 * max(position)
         else:
             for Randnum in [-1,-2,-3,-4,-5,-6]:
-                P0, P1 = Game.ChooseChess(Randnum)
+                P0, P1 = self.ChooseChess(Randnum)
                 if P0 == position or P1 == position:
                     sum += 1
             PD = sum/6 * max(position)
