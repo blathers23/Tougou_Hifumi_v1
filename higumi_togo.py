@@ -94,7 +94,7 @@ class EinStein_Game():
                             else:
                                 self.Player = -self.Player
                                 del self.PI[len(self.PI) - 1]
-                                self.board = np.array(self.PI[len(self.PI) - 1])
+                                self.board = np.array(self.PI[len(self.PI) - 1]).reshape([5,5])
                                 _ = input('退回上一局面，按回车以继续')
                                 continue
                         if self.Player * rand < 0:
@@ -151,7 +151,7 @@ class EinStein_Game():
                                 else:
                                     self.Player = -self.Player
                                     del self.PI[len(self.PI) - 1]
-                                    self.board = np.array(self.PI[len(self.PI) - 1])
+                                    self.board = np.array(self.PI[len(self.PI) - 1]).reshape([5,5])
                                     _ = input('退回上一局面，按回车以继续')
                                     continue
                             print('随机数为：', rand)
@@ -214,7 +214,7 @@ class EinStein_Game():
                                 else:
                                     self.Player = -self.Player
                                     del self.PI[len(self.PI) - 1]
-                                    self.board = np.array(self.PI[len(self.PI) - 1])
+                                    self.board = np.array(self.PI[len(self.PI) - 1]).reshape([5,5])
                                     _ = input('退回上一局面，按回车以继续')
                                     continue
                             print('随机数为：', rand)
@@ -530,7 +530,5 @@ class EinStein_Game():
         elif y == 4:
             y = 'E'
         self.CI.append(':' + str(rand) + '(' + chess + ',' + y + x + ')')
-
-
 
 EinStein_Game().main()
