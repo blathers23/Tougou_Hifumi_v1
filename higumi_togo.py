@@ -380,10 +380,6 @@ class EinStein_Game():
 
         pass
 
-    def regret(self):
-
-        pass
-
     def ChangeBoard(self):
         TempBoard = self.board.copy()
         TempBoard = np.where(TempBoard < 0, -TempBoard + 6, TempBoard)
