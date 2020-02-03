@@ -86,7 +86,16 @@ class EinStein_Game():
                             print('#####红方时间#####')
                         else:
                             print('*****蓝方时间*****')
-                        rand = int(input('请输入随机数：'))
+                        rand = int(input('请输入随机数,输入0以悔棋：'))
+                        if rand == '0':
+                            if len(self.PI) == 0:
+                                print('爪巴！赶紧的')
+                            else:
+                                self.Player = -self.Player
+                                del self.PI[len(self.PI) - 1]
+                                self.board = np.array(self.PI[len(self.PI) - 1])
+                                _ = input('退回上一局面，按回车以继续')
+                                continue
                         if self.Player * rand < 0:
                             print('!!!!!WARNING!!!!!')
                         chessPosition0, chessPosition1 = self.ChooseChess(rand)
@@ -136,7 +145,16 @@ class EinStein_Game():
                                 print('#####红方时间#####')
                             else:
                                 print('*****蓝方时间*****')
-                            rand = int(input('请输入随机数：'))
+                            rand = int(input('请输入随机数,输入0以悔棋：'))
+                            if rand == '0':
+                                if len(self.PI) == 0:
+                                    print('爪巴！赶紧的')
+                                else:
+                                    self.Player = -self.Player
+                                    del self.PI[len(self.PI) - 1]
+                                    self.board = np.array(self.PI[len(self.PI) - 1])
+                                    _ = input('退回上一局面，按回车以继续')
+                                    continue
                             print('随机数为：', rand)
                             if self.Player * rand < 0:
                                 print('!!!!!WARNING!!!!!')
@@ -192,7 +210,16 @@ class EinStein_Game():
                                 print('#####红方时间#####')
                             else:
                                 print('*****蓝方时间*****')
-                            rand = int(input('请输入随机数：'))
+                            rand = int(input('请输入随机数,输入0以悔棋：'))
+                            if rand == '0':
+                                if len(self.PI) == 0:
+                                    print('爪巴！赶紧的')
+                                else:
+                                    self.Player = -self.Player
+                                    del self.PI[len(self.PI) - 1]
+                                    self.board = np.array(self.PI[len(self.PI) - 1])
+                                    _ = input('退回上一局面，按回车以继续')
+                                    continue
                             print('随机数为：', rand)
                             if self.Player * rand < 0:
                                 print('!!!!!WARNING!!!!!')
@@ -345,6 +372,9 @@ class EinStein_Game():
         return moveDirection, Position
 
         
+    def Saver(self):
+
+        pass
 
     def show(self):
 
