@@ -57,6 +57,9 @@ class EinStein_Game():
     def __init__(self):
         self.board = np.zeros([5,5])
         self.PI = []
+        self.CI = []
+        self.RCSS = []  #红色棋子初始设定
+        self.BCSS = []
         self.mode = ['game', 'test'][1]
         self.Player = 0
 
@@ -77,8 +80,6 @@ class EinStein_Game():
                     blueBoard = [-float(n) for n in blueBoard.split(',')]
                     self.Player = float(input('请输入先手方：'))
                     self.createBoard(redBoard, blueBoard)
-                    self.PI = []
-                    self.PI.append(list(self.board.reshape(25)))
                     while True:
                         os.system('cls')
                         print(self.board)
@@ -113,7 +114,7 @@ class EinStein_Game():
                         else:
                             position = chessPosition1
                         moveDirection = self.GetMove(position)
-                        self.Move(position, moveDirection)
+                        self.Move(position, moveDirection, rand)
                         self.PI.append(list(self.board.reshape(25)))
                         winner = self.GetWinner()
                         if winner != 0:
@@ -136,8 +137,6 @@ class EinStein_Game():
                     if self.mode == 'test':
                         self.Player = float(input('请输入先手方：'))
                         self.createBoard(redBoard, blueBoard)
-                        self.PI = []
-                        self.PI.append(list(self.board.reshape(25)))
                         while True:
                             os.system('cls')
                             print(self.board)
@@ -183,7 +182,7 @@ class EinStein_Game():
                                 position, moveDirection = self.AIMove(chessPosition0, chessPosition1)
                                 time_end = time.time()
                                 print('AI思考用时为: ', time_end-time_start, ' 秒.')
-                            self.Move(position, moveDirection)
+                            self.Move(position, moveDirection, rand)
                             self.PI.append(list(self.board.reshape(25)))
                             winner = self.GetWinner()
                             if winner != 0:
@@ -201,8 +200,6 @@ class EinStein_Game():
                         self.Player = float(input('请输入先手方：'))
                         AIPlayer = float(input('请输入AI方：'))
                         self.createBoard(redBoard, blueBoard)
-                        self.PI = []
-                        self.PI.append(list(self.board.reshape(25)))
                         while True:
                             os.system('cls')
                             print(self.board)
@@ -247,7 +244,7 @@ class EinStein_Game():
                                 position, moveDirection = self.AIMove(chessPosition0, chessPosition1)
                                 time_end = time.time()
                                 print('AI思考用时为: ', time_end-time_start, ' 秒.')
-                            self.Move(position, moveDirection)
+                            self.Move(position, moveDirection, rand)
                             self.PI.append(list(self.board.reshape(25)))
                             winner = self.GetWinner()
                             if winner != 0:
@@ -261,7 +258,7 @@ class EinStein_Game():
                                 break
                             self.Player = -self.Player
             elif Tip1 == "S":
-                self.Saver()
+                self.Save()
                 print('提示：棋谱保存成功')
                 _ = input('回车以继续：')
             os.system('cls')
@@ -287,19 +284,60 @@ class EinStein_Game():
         return Move
                     
     def createBoard(self, red, blue):
+        self.PI = []
+        self.CI = []
+        self.RCSS = ['R:']
+        self.BCSS = ['B:']
         self.board = np.zeros([5,5])
         self.board[0][0] =  red[0]
+        self.RCSS.append('A5-')
+        self.RCSS.append('red[0]')
+        self.RCSS.append(';')
         self.board[0][1] =  red[1]
+        self.RCSS.append('B5-')
+        self.RCSS.append('red[1]')
+        self.RCSS.append(';')
         self.board[0][2] =  red[2]
+        self.RCSS.append('C5-')
+        self.RCSS.append('red[2]')
+        self.RCSS.append(';')
         self.board[1][0] =  red[3]
+        self.RCSS.append('A4-')
+        self.RCSS.append('red[3]')
+        self.RCSS.append(';')
         self.board[1][1] =  red[4]
+        self.RCSS.append('B4-')
+        self.RCSS.append('red[4]')
+        self.RCSS.append(';')
         self.board[2][0] =  red[5]
+        self.RCSS.append('A3-')
+        self.RCSS.append('red[5]')
+        self.RCSS.append(';')
         self.board[2][4] = blue[0]
+        self.BCSS.append('E3-')
+        self.BCSS.append('blue[0]')
+        self.BCSS.append(';')
         self.board[3][3] = blue[1]
+        self.BCSS.append('D2-')
+        self.BCSS.append('blue[1]')
+        self.BCSS.append(';')
         self.board[3][4] = blue[2]
+        self.BCSS.append('E2-')
+        self.BCSS.append('blue[2]')
+        self.BCSS.append(';')
         self.board[4][2] = blue[3]
+        self.BCSS.append('C1-')
+        self.BCSS.append('blue[3]')
+        self.BCSS.append(';')
         self.board[4][3] = blue[4]
+        self.BCSS.append('D1-')
+        self.BCSS.append('blue[4]')
+        self.BCSS.append(';')
         self.board[4][4] = blue[5]
+        self.BCSS.append('E1-')
+        self.BCSS.append('blue[5]')
+        self.BCSS.append(';')
+        self.PI.append(list(self.board.reshape(25)))
         #print(self.board)
 
     def ChooseChess(self, Randnum):
@@ -325,29 +363,39 @@ class EinStein_Game():
                 max = np.where(tempboard > 0, -12, tempboard)
                 return [np.where(min == min.min())[0][0], np.where(min == min.min())[1][0]], [np.where(max == max.max())[0][0], np.where(max == max.max())[1][0]]
 
-    def Move(self, position, direction):
+    def Move(self, position, direction, rand):
         x = position[0]
         y = position[1]
         if self.board[x][y] > 0:
             if direction == 0:
                 self.board[x][y + 1] = self.board[x][y]
                 self.board[x][y] = 0.
+                y += 1
             elif direction == 1:
                 self.board[x + 1][y] = self.board[x][y]
                 self.board[x][y] = 0.
+                x += 1
             elif direction == 2:
                 self.board[x + 1][y + 1] = self.board[x][y]
                 self.board[x][y] = 0.
+                x += 1 
+                y += 1
         elif self.board[x][y] < 0:
             if direction == 0:
                 self.board[x][y - 1] = self.board[x][y]
                 self.board[x][y] = 0.
+                y -= 1
             elif direction == 1:
                 self.board[x - 1][y] = self.board[x][y]
                 self.board[x][y] = 0.
+                x -= 1
             elif direction == 2:
                 self.board[x - 1][y - 1] = self.board[x][y]
                 self.board[x][y] = 0.
+                x -= 1
+                y -= 1
+
+        self.appendCI(x, y, rand)
 
     def GetWinner(self):
         if self.board[0][0] < 0 or (self.board <= 0).all():
@@ -372,7 +420,7 @@ class EinStein_Game():
         return moveDirection, Position
 
         
-    def Saver(self):
+    def Save(self):
 
         pass
 
@@ -444,6 +492,25 @@ class EinStein_Game():
             PD = sum/6 * max(position)
 
         return PD
+
+    def appendCI(self, x, y, rand):
+        chess = self.board[x][y]
+        if chess > 0:
+            chess = 'R' + str(chess)
+        else:
+            chess = 'B' + str(-chess)
+        x = str(5 - x)
+        if y == 0:
+            y = 'A'
+        elif y == 1:
+            y = 'B'
+        elif y == 2:
+            y = 'C'
+        elif y == 3:
+            y = 'D'
+        elif y == 4:
+            y = 'E'
+        self.CI.append(':' + str(rand) + '(' + chess + ',' + y + x + ')')
 
 
 
