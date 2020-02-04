@@ -60,7 +60,7 @@ class EinStein_Game():
         self.CI = []
         self.RCSS = []  #红色棋子初始设定
         self.BCSS = []
-        self.mode = ['game', 'test'][1]
+        self.mode = ['game', 'test'][0]
         self.Player = 0
 
     def main(self):
