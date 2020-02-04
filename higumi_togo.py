@@ -7,6 +7,9 @@ import time
 import os
 import a_forward
 import a_backward
+import MCTS
+import math
+import random
 
 Bboardvalue = np.zeros([5,5])
 Bboardvalue[0][0] = 100
@@ -60,8 +63,11 @@ class EinStein_Game():
         self.CI = []
         self.RCSS = []  #红色棋子初始设定
         self.BCSS = []
-        self.mode = ['game', 'test'][0]
+        self.mode = ['game', 'test'][1]
+        self.AImode = ['MCTS', 'UCT', 'TF', 'MCTS&TF', 'UCT&TF', 'Doge'][2]
         self.Player = 0
+        self.UCTSTEPS = 3000
+        self.MCTSSTEPS = 3000
 
     def main(self):
         while True:
@@ -553,18 +559,67 @@ class EinStein_Game():
             elif position[1] == 4:
                 Move = 1
             else:
-                Move = self.TFMove(position)
-                #Move = random.randint(0, 2)
+                if self.AImode == 'TF':
+                    Move = self.TFMove(position)
+                elif self.AImode == 'UCT&TF':
+                    Move = self.UCTMove(position)
+                elif self.AImode == 'UCT':
+                    Move = self.UCTMove(position, False)
+                elif self.AImode == 'Doge':
+                    Move = random.randint(0, 2)
+                elif self.AImode == 'MCTS':
+                    WinRate0 = MCTS.MCTS(self.board.copy(), position, 0, STEPS = self.MCTSSTEPS, is_TF = False)
+                    WinRate1 = MCTS.MCTS(self.board.copy(), position, 1, STEPS = self.MCTSSTEPS, is_TF = False)
+                    WinRate2 = MCTS.MCTS(self.board.copy(), position, 2, STEPS = self.MCTSSTEPS, is_TF = False)
+                    Move = np.argmax([WinRate0, WinRate1, WinRate2])
+                elif self.AImode == 'MCTS&TF':
+                    WinRate0 = MCTS.MCTS(self.board.copy(), position, 0, STEPS = self.MCTSSTEPS)
+                    WinRate1 = MCTS.MCTS(self.board.copy(), position, 1, STEPS = self.MCTSSTEPS)
+                    WinRate2 = MCTS.MCTS(self.board.copy(), position, 2, STEPS = self.MCTSSTEPS)
+                    Move = np.argmax([WinRate0, WinRate1, WinRate2])
         elif self.board[position[0]][position[1]] < 0:
             if position[0] == 0:
                 Move = 0
             elif position[1] == 0:
                 Move = 1
             else:
-                Move = self.TFMove(position)
-                #Move = random.randint(0, 2)
+                if self.AImode == 'TF':
+                    Move = self.TFMove(position)
+                elif self.AImode == 'UCT&TF':
+                    Move = self.UCTMove(position)
+                elif self.AImode == 'UCT':
+                    Move = self.UCTMove(position, False)
+                elif self.AImode == 'Doge':
+                    Move = random.randint(0, 2)
+                elif self.AImode == 'MCTS':
+                    WinRate0 = MCTS.MCTS(self.board.copy(), position, 0, STEPS = self.MCTSSTEPS, is_TF = False)
+                    WinRate1 = MCTS.MCTS(self.board.copy(), position, 1, STEPS = self.MCTSSTEPS, is_TF = False)
+                    WinRate2 = MCTS.MCTS(self.board.copy(), position, 2, STEPS = self.MCTSSTEPS, is_TF = False)
+                    Move = np.argmax([WinRate0, WinRate1, WinRate2])
+                elif self.AImode == 'MCTS&TF':
+                    WinRate0 = MCTS.MCTS(self.board.copy(), position, 0, STEPS = self.MCTSSTEPS)
+                    WinRate1 = MCTS.MCTS(self.board.copy(), position, 1, STEPS = self.MCTSSTEPS)
+                    WinRate2 = MCTS.MCTS(self.board.copy(), position, 2, STEPS = self.MCTSSTEPS)
+                    Move = np.argmax([WinRate0, WinRate1, WinRate2])
         
         return Move
+
+    def UCTMove(self, position, is_TF = True):
+        N = [0, 0, 0]
+        UCTvalue = [0, 0, 0]
+        WinSum = [0, 0, 0]
+        for Step in range(self.UCTSTEPS):
+            board = self.board.copy()
+            i = np.argmax(UCTvalue)
+            WinSum[i] += MCTS.MCTS(board, position, i, STEPS = 1, is_TF = is_TF)
+            N[i] += 1
+            UCTvalue[0] = WinSum[0] / (N[0] + 1e-99) + (2 * math.log(Step + 1)/(N[0] + 1e-99)) ** 0.5
+            UCTvalue[1] = WinSum[1] / (N[1] + 1e-99) + (2 * math.log(Step + 1)/(N[1] + 1e-99)) ** 0.5
+            UCTvalue[2] = WinSum[2] / (N[2] + 1e-99) + (2 * math.log(Step + 1)/(N[2] + 1e-99)) ** 0.5
+        #print('WinSum:', WinSum)
+        #print('     N:', N)
+
+        return np.argmax(np.array(WinSum) / np.array(N))
 
 if __name__ == '__main__':
     EinStein_Game().main()
