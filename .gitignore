@@ -3,3 +3,6 @@
 .vs/VSWorkspaceState.json
 .vs/14.一二三main/v16/.suo
 .vscode/settings.json
+__pycache__/a_backward.cpython-37.pyc
+__pycache__/a_forward.cpython-37.pyc
+__pycache__/a_generateds.cpython-37.pyc

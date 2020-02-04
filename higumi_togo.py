@@ -88,12 +88,14 @@ class EinStein_Game():
                         else:
                             print('*****蓝方时间*****')
                         rand = int(input('请输入随机数,输入0以悔棋：'))
-                        if rand == '0':
-                            if len(self.PI) == 0:
+                        if rand == 0:
+                            if len(self.PI) == 1:
                                 print('爪巴！赶紧的')
+                                continue
                             else:
                                 self.Player = -self.Player
                                 del self.PI[len(self.PI) - 1]
+                                del self.CI[len(self.CI) - 1]
                                 self.board = np.array(self.PI[len(self.PI) - 1]).reshape([5,5])
                                 _ = input('退回上一局面，按回车以继续')
                                 continue
@@ -145,12 +147,14 @@ class EinStein_Game():
                             else:
                                 print('*****蓝方时间*****')
                             rand = int(input('请输入随机数,输入0以悔棋：'))
-                            if rand == '0':
-                                if len(self.PI) == 0:
+                            if rand == 0:
+                                if len(self.PI) == 1:
                                     print('爪巴！赶紧的')
+                                    continue
                                 else:
                                     self.Player = -self.Player
                                     del self.PI[len(self.PI) - 1]
+                                    del self.CI[len(self.CI) - 1]
                                     self.board = np.array(self.PI[len(self.PI) - 1]).reshape([5,5])
                                     _ = input('退回上一局面，按回车以继续')
                                     continue
@@ -208,12 +212,14 @@ class EinStein_Game():
                             else:
                                 print('*****蓝方时间*****')
                             rand = int(input('请输入随机数,输入0以悔棋：'))
-                            if rand == '0':
-                                if len(self.PI) == 0:
+                            if rand == 0:
+                                if len(self.PI) == 1:
                                     print('爪巴！赶紧的')
+                                    continue
                                 else:
                                     self.Player = -self.Player
                                     del self.PI[len(self.PI) - 1]
+                                    del self.CI[len(self.CI) - 1]
                                     self.board = np.array(self.PI[len(self.PI) - 1]).reshape([5,5])
                                     _ = input('退回上一局面，按回车以继续')
                                     continue
@@ -295,51 +301,51 @@ class EinStein_Game():
         self.board = np.zeros([5,5])
         self.board[0][0] =  red[0]
         self.RCSS.append('A5-')
-        self.RCSS.append('red[0]')
+        self.RCSS.append(str(red[0]))
         self.RCSS.append(';')
         self.board[0][1] =  red[1]
         self.RCSS.append('B5-')
-        self.RCSS.append('red[1]')
+        self.RCSS.append(str(red[1]))
         self.RCSS.append(';')
         self.board[0][2] =  red[2]
         self.RCSS.append('C5-')
-        self.RCSS.append('red[2]')
+        self.RCSS.append(str(red[2]))
         self.RCSS.append(';')
         self.board[1][0] =  red[3]
         self.RCSS.append('A4-')
-        self.RCSS.append('red[3]')
+        self.RCSS.append(str(red[3]))
         self.RCSS.append(';')
         self.board[1][1] =  red[4]
         self.RCSS.append('B4-')
-        self.RCSS.append('red[4]')
+        self.RCSS.append(str(red[4]))
         self.RCSS.append(';')
         self.board[2][0] =  red[5]
         self.RCSS.append('A3-')
-        self.RCSS.append('red[5]')
+        self.RCSS.append(str(red[5]))
         self.RCSS.append(';')
         self.board[2][4] = blue[0]
         self.BCSS.append('E3-')
-        self.BCSS.append('blue[0]')
+        self.BCSS.append(str(blue[0]))
         self.BCSS.append(';')
         self.board[3][3] = blue[1]
         self.BCSS.append('D2-')
-        self.BCSS.append('blue[1]')
+        self.BCSS.append(str(blue[1]))
         self.BCSS.append(';')
         self.board[3][4] = blue[2]
         self.BCSS.append('E2-')
-        self.BCSS.append('blue[2]')
+        self.BCSS.append(str(blue[2]))
         self.BCSS.append(';')
         self.board[4][2] = blue[3]
         self.BCSS.append('C1-')
-        self.BCSS.append('blue[3]')
+        self.BCSS.append(str(blue[3]))
         self.BCSS.append(';')
         self.board[4][3] = blue[4]
         self.BCSS.append('D1-')
-        self.BCSS.append('blue[4]')
+        self.BCSS.append(str(blue[4]))
         self.BCSS.append(';')
         self.board[4][4] = blue[5]
         self.BCSS.append('E1-')
-        self.BCSS.append('blue[5]')
+        self.BCSS.append(str(blue[5]))
         self.BCSS.append(';')
         self.PI.append(list(self.board.reshape(25)))
         #print(self.board)
@@ -412,16 +418,21 @@ class EinStein_Game():
         return Winner
 
     def AIMove(self, Position0, Position1):
-        Move0 = self.TFMove(Position0)
-        Move1 = self.TFMove(Position1)
-        if self.Score(Position0, Move0, Position1, Move1) == 0:
-            moveDirection = Move0
+        
+        if Position0 == Position1:
+            moveDirection = self.GetAIMove(Position0)
             Position = Position0
         else:
-            moveDirection = Move1
-            Position = Position1
+            Move0 = self.GetAIMove(Position0)
+            Move1 = self.GetAIMove(Position1)
+            if self.Score(Position0, Move0, Position1, Move1) == 0:
+                moveDirection = Move0
+                Position = Position0
+            else:
+                moveDirection = Move1
+                Position = Position1
         
-        return moveDirection, Position
+        return Position, moveDirection
 
         
     def Save(self):
@@ -468,35 +479,35 @@ class EinStein_Game():
 
         Move = sess.run(preValue, feed_dict={x:board_ready})
     
-        return Move
+        return Move[0]
 
     def Score(self, position0, move0, position1, move1):
         if self.board[position0[0]][position0[1]] > 0:
             if move0 == 0:
-                attack0 = Rboardvalue[position0[0]][position0[1] + 1] - self.GetPD(self.board, [position0[0], position0[1] + 1])
+                attack0 = Rboardvalue[position0[0]][position0[1] + 1] - self.GetPD([position0[0], position0[1] + 1])
             elif move0 == 1:
-                attack0 = Rboardvalue[position0[0] + 1][position0[1]] - self.GetPD(self.board, [position0[0] + 1, position0[1]])
+                attack0 = Rboardvalue[position0[0] + 1][position0[1]] - self.GetPD([position0[0] + 1, position0[1]])
             elif move0 == 2:
-                attack0 = Rboardvalue[position0[0] + 1][position0[1] + 1] - self.GetPD(self.board, [position0[0] + 1, position0[1] + 1])
+                attack0 = Rboardvalue[position0[0] + 1][position0[1] + 1] - self.GetPD([position0[0] + 1, position0[1] + 1])
             if move1 == 0:
-                attack1 = Rboardvalue[position1[0]][position1[1] + 1] - self.GetPD(self.board, [position1[0], position1[1] + 1])
+                attack1 = Rboardvalue[position1[0]][position1[1] + 1] - self.GetPD([position1[0], position1[1] + 1])
             elif move1 == 1:
-                attack1 = Rboardvalue[position1[0] + 1][position1[1]] - self.GetPD(self.board, [position1[0] + 1, position1[1]])
+                attack1 = Rboardvalue[position1[0] + 1][position1[1]] - self.GetPD([position1[0] + 1, position1[1]])
             elif move1 == 2:
-                attack1 = Rboardvalue[position1[0] + 1][position1[1] + 1] - self.GetPD(self.board, [position1[0] + 1, position1[1] + 1])
+                attack1 = Rboardvalue[position1[0] + 1][position1[1] + 1] - self.GetPD([position1[0] + 1, position1[1] + 1])
         elif self.board[position0[0]][position0[1]] < 0:
             if move0 == 0:
-                attack0 = Bboardvalue[position0[0]][position0[1] - 1] - self.GetPD(self.board, [position0[0], position0[1] - 1])
+                attack0 = Bboardvalue[position0[0]][position0[1] - 1] - self.GetPD([position0[0], position0[1] - 1])
             elif move0 == 1:
-                attack0 = Bboardvalue[position0[0] - 1][position0[1]] - self.GetPD(self.board, [position0[0] - 1, position0[1]])
+                attack0 = Bboardvalue[position0[0] - 1][position0[1]] - self.GetPD([position0[0] - 1, position0[1]])
             elif move0 == 2:
-                attack0 = Bboardvalue[position0[0] - 1][position0[1] - 1] - self.GetPD(self.board, [position0[0] - 1, position0[1] - 1])
+                attack0 = Bboardvalue[position0[0] - 1][position0[1] - 1] - self.GetPD([position0[0] - 1, position0[1] - 1])
             if move1 == 0:
-                attack1 = Bboardvalue[position1[0]][position1[1] - 1] - self.GetPD(self.board, [position1[0], position1[1] - 1])
+                attack1 = Bboardvalue[position1[0]][position1[1] - 1] - self.GetPD([position1[0], position1[1] - 1])
             elif move1 == 1:
-                attack1 = Bboardvalue[position1[0] - 1][position1[1]] - self.GetPD(self.board, [position1[0] - 1, position1[1]])
+                attack1 = Bboardvalue[position1[0] - 1][position1[1]] - self.GetPD([position1[0] - 1, position1[1]])
             elif move1 == 2:
-                attack1 = Bboardvalue[position1[0] - 1][position1[1] - 1] - self.GetPD(self.board, [position1[0] - 1, position1[1] - 1])
+                attack1 = Bboardvalue[position1[0] - 1][position1[1] - 1] - self.GetPD([position1[0] - 1, position1[1] - 1])
 
         return np.argmax([attack0, attack1])
 
@@ -534,5 +545,25 @@ class EinStein_Game():
         elif y == 4:
             y = 'E'
         self.CI.append(':' + str(rand) + '(' + chess + ',' + y + x + ')')
+
+    def GetAIMove(self, position):
+        if self.board[position[0]][position[1]] > 0:
+            if position[0] == 4:
+                Move = 0
+            elif position[1] == 4:
+                Move = 1
+            else:
+                Move = self.TFMove(position)
+                #Move = random.randint(0, 2)
+        elif self.board[position[0]][position[1]] < 0:
+            if position[0] == 0:
+                Move = 0
+            elif position[1] == 0:
+                Move = 1
+            else:
+                Move = self.TFMove(position)
+                #Move = random.randint(0, 2)
+        
+        return Move
 
 EinStein_Game().main()
