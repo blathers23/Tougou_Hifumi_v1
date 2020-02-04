@@ -475,7 +475,7 @@ class EinStein_Game():
             1,
             a_forward.BOARD_SIZE,
             a_forward.BOARD_SIZE,
-            a_forward.NUM_CHANNELS))
+            a_forward.NUM_CHANNELS)) / 12.
 
         Move = sess.run(preValue, feed_dict={x:board_ready})
     
