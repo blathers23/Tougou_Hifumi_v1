@@ -442,7 +442,7 @@ class EinStein_Game():
         Name = input('请输入竞赛名称：')
 
         FileName = Team1 + 'vs' + Team2 + '-' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + '.txt'
-        Text1 = '#[' + Team1 + '][' + Team2 + '][' + time.strftime("%Y.%m.%d %H:%M:%S", time.localtime()) + ' ' + Location + '][' + Name + ']'
+        Text1 = '#[' + Team1 + '][' + Team2 + '][' + time.strftime("%Y.%m.%d %H:%M:%S", time.localtime()) + ' ' + Location + '][' + Name + '];'
         File = open(FileName, 'w')
         File.write(Text1)
         File.write('\r')
@@ -533,7 +533,7 @@ class EinStein_Game():
             chess = 'R' + str(chess)
         else:
             chess = 'B' + str(-chess)
-        x = str(5 - x)
+        x = str(int(5 - x))
         if y == 0:
             y = 'A'
         elif y == 1:
@@ -544,7 +544,7 @@ class EinStein_Game():
             y = 'D'
         elif y == 4:
             y = 'E'
-        self.CI.append(':' + str(rand) + '(' + chess + ',' + y + x + ')')
+        self.CI.append(':' + str(abs(rand)) + ';(' + chess + ',' + y + x + ')')
 
     def GetAIMove(self, position):
         if self.board[position[0]][position[1]] > 0:
@@ -566,4 +566,5 @@ class EinStein_Game():
         
         return Move
 
-EinStein_Game().main()
+if __name__ == '__main__':
+    EinStein_Game().main()
