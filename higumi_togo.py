@@ -66,7 +66,7 @@ class EinStein_Game():
         self.mode = ['game', 'test'][1]
         self.AImode = ['MCTS', 'UCT', 'TF', 'MCTS&TF', 'UCT&TF', 'Doge'][2]
         self.Player = 0
-        self.UCTSTEPS = 3000
+        self.UCTSTEPS = 9000
         self.MCTSSTEPS = 3000
 
     def main(self):
