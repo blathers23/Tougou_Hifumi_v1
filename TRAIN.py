@@ -39,6 +39,7 @@ Game = copy.deepcopy(env.Game())
 METHOD = ['UCT','MCTS'][0]
 UCTSTEPS = 10000
 MCTSSTEPS = 3000
+is_TF = True
 
 def onemain():
     Game.RandResetBoard()
@@ -103,9 +104,9 @@ def GetMove(board, position):
             Move = 1
         else:
             if METHOD == 'MCTS':
-                WinRate0 = MCTS.MCTS(board.copy(), position, 0, STEPS = MCTSSTEPS)
-                WinRate1 = MCTS.MCTS(board.copy(), position, 1, STEPS = MCTSSTEPS)
-                WinRate2 = MCTS.MCTS(board.copy(), position, 2, STEPS = MCTSSTEPS)
+                WinRate0 = MCTS.MCTS(board.copy(), position, 0, STEPS = MCTSSTEPS, is_TF = is_TF)
+                WinRate1 = MCTS.MCTS(board.copy(), position, 1, STEPS = MCTSSTEPS, is_TF = is_TF)
+                WinRate2 = MCTS.MCTS(board.copy(), position, 2, STEPS = MCTSSTEPS, is_TF = is_TF)
                 Move = np.argmax([WinRate0, WinRate1, WinRate2])
             elif METHOD == 'UCT':
                 Move = UCTMove(board.copy(), position)
@@ -116,9 +117,9 @@ def GetMove(board, position):
             Move = 1
         else:
             if METHOD == 'MCTS':
-                WinRate0 = MCTS.MCTS(board.copy(), position, 0, STEPS = MCTSSTEPS)
-                WinRate1 = MCTS.MCTS(board.copy(), position, 1, STEPS = MCTSSTEPS)
-                WinRate2 = MCTS.MCTS(board.copy(), position, 2, STEPS = MCTSSTEPS)
+                WinRate0 = MCTS.MCTS(board.copy(), position, 0, STEPS = MCTSSTEPS, is_TF = is_TF)
+                WinRate1 = MCTS.MCTS(board.copy(), position, 1, STEPS = MCTSSTEPS, is_TF = is_TF)
+                WinRate2 = MCTS.MCTS(board.copy(), position, 2, STEPS = MCTSSTEPS, is_TF = is_TF)
                 Move = np.argmax([WinRate0, WinRate1, WinRate2])
             elif METHOD == 'UCT':
                 Move = UCTMove(board.copy(), position)
@@ -178,7 +179,7 @@ def UCTMove(Mboard, position):
     for Step in range(UCTSTEPS):
         board = Mboard.copy()
         i = np.argmax(UCTvalue)
-        WinSum[i] += MCTS.MCTS(board, position, i, STEPS = 1)
+        WinSum[i] += MCTS.MCTS(board, position, i, STEPS = 1, is_TF = is_TF)
         N[i] += 1
         UCTvalue[0] = WinSum[0] / (N[0] + 1e-99) + (2 * math.log(Step + 1)/(N[0] + 1e-99)) ** 0.5
         UCTvalue[1] = WinSum[1] / (N[1] + 1e-99) + (2 * math.log(Step + 1)/(N[1] + 1e-99)) ** 0.5
