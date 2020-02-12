@@ -6,6 +6,7 @@ import time
 import pandas as pd
 import math
 import copy
+from tqdm import tqdm
 
 Bboardvalue = np.zeros([5,5])
 Bboardvalue[0][0] = 100
@@ -176,7 +177,7 @@ def UCTMove(Mboard, position):
     N = [0, 0, 0]
     UCTvalue = [0, 0, 0]
     WinSum = [0, 0, 0]
-    for Step in range(UCTSTEPS):
+    for Step in tqdm(range(UCTSTEPS), ncols = 65):
         board = Mboard.copy()
         i = np.argmax(UCTvalue)
         WinSum[i] += MCTS.MCTS(board, position, i, STEPS = 1, is_TF = is_TF)

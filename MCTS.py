@@ -40,6 +40,7 @@ Bboardvalue[0][4] = 1
 Bboardvalue[4][4] = 0
 Rboardvalue = np.flip(Bboardvalue)
 
+Game = copy.deepcopy(env.Game(np.zeros([5,5])))
 sess = tf.Session()
 tf.Graph().as_default()
 x = tf.placeholder(tf.float32,[
@@ -170,13 +171,13 @@ def GetPD(board, position, sum = 0):
     return PD
 
 def ChangeBoard():
+    global Game
     TempBoard = Game.board.copy()
     TempBoard = np.where(TempBoard < 0, -TempBoard + 6, TempBoard)
 
     return TempBoard
 
-def AIMove(position):
-    Board = ChangeBoard()
+def AIMove(position, Board = ChangeBoard()):
     Board[position[0]][position[1]] = -Board[position[0]][position[1]]
     board_ready = np.reshape(Board,(
             1,

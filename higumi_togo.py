@@ -39,23 +39,6 @@ Bboardvalue[0][4] = 1
 Bboardvalue[4][4] = 0
 Rboardvalue = np.flip(Bboardvalue)
 
-sess = tf.Session()
-tf.Graph().as_default()
-x = tf.placeholder(tf.float32,[
-    1,
-    a_forward.BOARD_SIZE, 
-    a_forward.BOARD_SIZE,
-    a_forward.NUM_CHANNELS])#重现计算图
-y = a_forward.forward(x,False,None)#计算求得y
-preValue = tf.argmax(y,1)#y的最大值对应的列表索引号即为最大值
-
-variable_averages = tf.train.ExponentialMovingAverage(a_backward.MOVING_AVERAGE_DECAY)
-variables_to_restore = variable_averages.variables_to_restore()
-saver = tf.train.Saver(variables_to_restore)#实例化带有滑动平均值的saver
-
-ckpt = tf.train.get_checkpoint_state(a_backward.MODEL_SAVE_PATH)#用with结构加载ckpt
-saver.restore(sess, ckpt.model_checkpoint_path)
-
 class EinStein_Game():
     def __init__(self):
         self.board = np.zeros([5,5])
@@ -63,7 +46,7 @@ class EinStein_Game():
         self.CI = []
         self.RCSS = []  #红色棋子初始设定
         self.BCSS = []
-        self.mode = ['game', 'test'][1]
+        self.mode = ['game', 'test'][0]
         self.AImode = ['MCTS', 'UCT', 'TF', 'MCTS&TF', 'UCT&TF', 'Doge'][2]
         self.Player = 0
         self.UCTSTEPS = 9000
@@ -307,51 +290,51 @@ class EinStein_Game():
         self.board = np.zeros([5,5])
         self.board[0][0] =  red[0]
         self.RCSS.append('A5-')
-        self.RCSS.append(str(red[0]))
+        self.RCSS.append(str(int(red[0])))
         self.RCSS.append(';')
         self.board[0][1] =  red[1]
         self.RCSS.append('B5-')
-        self.RCSS.append(str(red[1]))
+        self.RCSS.append(str(int(red[1])))
         self.RCSS.append(';')
         self.board[0][2] =  red[2]
         self.RCSS.append('C5-')
-        self.RCSS.append(str(red[2]))
+        self.RCSS.append(str(int(red[2])))
         self.RCSS.append(';')
         self.board[1][0] =  red[3]
         self.RCSS.append('A4-')
-        self.RCSS.append(str(red[3]))
+        self.RCSS.append(str(int(red[3])))
         self.RCSS.append(';')
         self.board[1][1] =  red[4]
         self.RCSS.append('B4-')
-        self.RCSS.append(str(red[4]))
+        self.RCSS.append(str(int(red[4])))
         self.RCSS.append(';')
         self.board[2][0] =  red[5]
         self.RCSS.append('A3-')
-        self.RCSS.append(str(red[5]))
+        self.RCSS.append(str(int(red[5])))
         self.RCSS.append(';')
         self.board[2][4] = blue[0]
         self.BCSS.append('E3-')
-        self.BCSS.append(str(blue[0]))
+        self.BCSS.append(str(int(blue[0])))
         self.BCSS.append(';')
         self.board[3][3] = blue[1]
         self.BCSS.append('D2-')
-        self.BCSS.append(str(blue[1]))
+        self.BCSS.append(str(int(blue[1])))
         self.BCSS.append(';')
         self.board[3][4] = blue[2]
         self.BCSS.append('E2-')
-        self.BCSS.append(str(blue[2]))
+        self.BCSS.append(str(int(blue[2])))
         self.BCSS.append(';')
         self.board[4][2] = blue[3]
         self.BCSS.append('C1-')
-        self.BCSS.append(str(blue[3]))
+        self.BCSS.append(str(int(blue[3])))
         self.BCSS.append(';')
         self.board[4][3] = blue[4]
         self.BCSS.append('D1-')
-        self.BCSS.append(str(blue[4]))
+        self.BCSS.append(str(int(blue[4])))
         self.BCSS.append(';')
         self.board[4][4] = blue[5]
         self.BCSS.append('E1-')
-        self.BCSS.append(str(blue[5]))
+        self.BCSS.append(str(int(blue[5])))
         self.BCSS.append(';')
         self.PI.append(list(self.board.reshape(25)))
         #print(self.board)
@@ -446,8 +429,13 @@ class EinStein_Game():
         Team2 = input('请输入队伍2名称：')
         Location = input('请输入比赛地点：')
         Name = input('请输入竞赛名称：')
+        Winner = input('请输入获胜队伍(1:先手方 or -1:后手方)：')
+        if Winner == '1':
+            Winner = '先手方'
+        elif Winner == '-1':
+            Winner = '后手方'
 
-        FileName = Team1 + 'vs' + Team2 + '-' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + '.txt'
+        FileName = Team1 + 'vs' + Team2 + '-' + Winner + time.strftime("%Y%m%d%H%M%S", time.localtime()) + '.txt'
         Text1 = '#[' + Team1 + '][' + Team2 + '][' + time.strftime("%Y.%m.%d %H:%M:%S", time.localtime()) + ' ' + Location + '][' + Name + '];'
         File = open(FileName, 'w')
         File.write(Text1)
@@ -476,14 +464,7 @@ class EinStein_Game():
 
     def TFMove(self, position):
         Board = self.ChangeBoard()
-        Board[position[0]][position[1]] = -Board[position[0]][position[1]]
-        board_ready = np.reshape(Board,(
-            1,
-            a_forward.BOARD_SIZE,
-            a_forward.BOARD_SIZE,
-            a_forward.NUM_CHANNELS)) / 12.
-
-        Move = sess.run(preValue, feed_dict={x:board_ready})
+        Move = MCTS.AIMove(position, Board)
     
         return Move[0]
 
@@ -536,9 +517,9 @@ class EinStein_Game():
     def appendCI(self, x, y, rand):
         chess = self.board[x][y]
         if chess > 0:
-            chess = 'R' + str(chess)
+            chess = 'R' + str(int(chess))
         else:
-            chess = 'B' + str(-chess)
+            chess = 'B' + str(int(-chess))
         x = str(int(5 - x))
         if y == 0:
             y = 'A'
@@ -608,7 +589,7 @@ class EinStein_Game():
         N = [0, 0, 0]
         UCTvalue = [0, 0, 0]
         WinSum = [0, 0, 0]
-        for Step in range(self.UCTSTEPS):
+        for Step in tqdm(range(self.UCTSTEPS), ncols = 50):
             board = self.board.copy()
             i = np.argmax(UCTvalue)
             WinSum[i] += MCTS.MCTS(board, position, i, STEPS = 1, is_TF = is_TF)
